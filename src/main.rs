@@ -1,16 +1,14 @@
 use bevy::prelude::*;
 
-fn main() {
-  App::new().add_plugins((DefaultPlugins, MovingPlugin)).run();
-}
+const BACKGROUND_COLOR: Color = Color::BLACK;
 
-pub struct MovingPlugin;
-impl Plugin for MovingPlugin {
-  fn build(&self, app: &mut App) {
-    app
-      .add_systems(Startup, setup)
-      .add_systems(Update, sprite_movement);
-  }
+fn main() {
+  App::new()
+    .add_plugins(DefaultPlugins)
+    .insert_resource(ClearColor(BACKGROUND_COLOR))
+    .add_systems(Startup, setup)
+    .add_systems(FixedUpdate, move_sprite)
+    .run();
 }
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
@@ -21,27 +19,39 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
       transform: Transform::from_xyz(100., 0., 0.),
       ..default()
     },
-    Direction::Up,
+    Player,
   ));
 }
 
-#[derive(Component)]
-enum Direction {
-  Up,
-  Down,
-}
+const PLAYER_SPEED: f32 = 500.;
 
-fn sprite_movement(time: Res<Time>, mut sprite_position: Query<(&mut Direction, &mut Transform)>) {
-  for (mut logo, mut transform) in &mut sprite_position {
-    match *logo {
-      Direction::Up => transform.translation.y += 150. * time.delta_seconds(),
-      Direction::Down => transform.translation.y -= 150. * time.delta_seconds(),
-    }
+fn move_sprite(
+  keyboard_input: Res<ButtonInput<KeyCode>>,
+  mut query: Query<&mut Transform, With<Player>>,
+  time: Res<Time>,
+) {
+  let mut player_transform = query.single_mut();
+  let mut direction = Vec2::new(0., 0.);
 
-    if transform.translation.y > 200. {
-      *logo = Direction::Down;
-    } else if transform.translation.y < -200. {
-      *logo = Direction::Up;
-    }
+  if keyboard_input.pressed(KeyCode::ArrowLeft) {
+    direction.x -= 1.0;
+  }
+  if keyboard_input.pressed(KeyCode::ArrowRight) {
+    direction.x += 1.0;
+  }
+  if keyboard_input.pressed(KeyCode::ArrowDown) {
+    direction.y -= 1.0;
+  }
+  if keyboard_input.pressed(KeyCode::ArrowUp) {
+    direction.y += 1.0;
+  }
+
+  if !(direction.x == 0.0 && direction.y == 0.0) {
+    let velocity = direction.normalize() * PLAYER_SPEED * time.delta_seconds();
+    player_transform.translation.x += velocity.x;
+    player_transform.translation.y += velocity.y;
   }
 }
+
+#[derive(Component)]
+struct Player;
