@@ -1,48 +1,47 @@
 use bevy::prelude::*;
 
-#[derive(Component)]
-struct Person;
-
-#[derive(Component)]
-struct Name(String);
-
-fn add_people(mut commands: Commands) {
-  commands.spawn((Person, Name("Ernie".to_string())));
-  commands.spawn((Person, Name("Bert".to_string())));
-  commands.spawn((Person, Name("Frank".to_string())));
+fn main() {
+  App::new().add_plugins((DefaultPlugins, MovingPlugin)).run();
 }
 
-#[derive(Resource)]
-struct GreetTimer(Timer);
-
-fn greet_people(time: Res<Time>, mut timer: ResMut<GreetTimer>, query: Query<&Name, With<Person>>) {
-  if timer.0.tick(time.delta()).just_finished() {
-    for name in &query {
-      println!("hello {}!", name.0);
-    }
-  }
-}
-
-fn update_people(mut query: Query<&mut Name, With<Person>>) {
-  for mut name in &mut query {
-    if name.0 == "Frank" {
-      name.0 = "Big Bird".to_string();
-      break;
-    }
-  }
-}
-
-pub struct HelloPlugin;
-
-impl Plugin for HelloPlugin {
+pub struct MovingPlugin;
+impl Plugin for MovingPlugin {
   fn build(&self, app: &mut App) {
     app
-      .insert_resource(GreetTimer(Timer::from_seconds(2.0, TimerMode::Repeating)))
-      .add_systems(Startup, add_people)
-      .add_systems(Update, (greet_people, update_people).chain());
+      .add_systems(Startup, setup)
+      .add_systems(Update, sprite_movement);
   }
 }
 
-fn main() {
-  App::new().add_plugins((DefaultPlugins, HelloPlugin)).run();
+fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
+  commands.spawn(Camera2dBundle::default());
+  commands.spawn((
+    SpriteBundle {
+      texture: asset_server.load("bevy_bird_dark.png"),
+      transform: Transform::from_xyz(100., 0., 0.),
+      ..default()
+    },
+    Direction::Up,
+  ));
+}
+
+#[derive(Component)]
+enum Direction {
+  Up,
+  Down,
+}
+
+fn sprite_movement(time: Res<Time>, mut sprite_position: Query<(&mut Direction, &mut Transform)>) {
+  for (mut logo, mut transform) in &mut sprite_position {
+    match *logo {
+      Direction::Up => transform.translation.y += 150. * time.delta_seconds(),
+      Direction::Down => transform.translation.y -= 150. * time.delta_seconds(),
+    }
+
+    if transform.translation.y > 200. {
+      *logo = Direction::Down;
+    } else if transform.translation.y < -200. {
+      *logo = Direction::Up;
+    }
+  }
 }
