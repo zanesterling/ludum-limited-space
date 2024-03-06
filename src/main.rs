@@ -10,6 +10,7 @@ fn main() {
     .add_plugins(RapierDebugRenderPlugin::default())
     .insert_resource(ClearColor(BACKGROUND_COLOR))
     .add_systems(Startup, (setup_graphics, setup_physics))
+    .add_systems(FixedUpdate, update_system)
     .run();
 }
 
@@ -32,4 +33,39 @@ fn setup_physics(mut commands: Commands) {
     .insert(Collider::ball(0.5))
     .insert(Restitution::coefficient(0.7))
     .insert(TransformBundle::from(Transform::from_xyz(0.0, 4.0, 0.0)));
+
+  /* Configure the character controller & collider. */
+  commands
+    .spawn(RigidBody::KinematicPositionBased)
+    .insert(Collider::ball(0.5))
+    .insert(TransformBundle::from(Transform::from_xyz(0.0, 1.0, 0.0)))
+    .insert(KinematicCharacterController {
+      offset: CharacterLength::Relative(0.01),
+      ..default()
+    });
+}
+
+const PLAYER_SPEED: f32 = 5.0;
+fn update_system(
+  keyboard_input: Res<ButtonInput<KeyCode>>,
+  mut controllers: Query<&mut KinematicCharacterController>,
+  time: Res<Time>,
+) {
+  for mut controller in controllers.iter_mut() {
+    let mut direction = Vec3::new(0.0, 0.0, 0.0);
+    if keyboard_input.pressed(KeyCode::ArrowLeft) {
+      direction.x -= 1.0;
+    }
+    if keyboard_input.pressed(KeyCode::ArrowRight) {
+      direction.x += 1.0;
+    }
+    if keyboard_input.pressed(KeyCode::ArrowUp) {
+      direction.z -= 1.0;
+    }
+    if keyboard_input.pressed(KeyCode::ArrowDown) {
+      direction.z += 1.0;
+    }
+
+    controller.translation = Some(direction * PLAYER_SPEED * time.delta_seconds());
+  }
 }
