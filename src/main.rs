@@ -1,3 +1,6 @@
+mod player;
+
+use player::*;
 use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
 use bevy::pbr::CascadeShadowConfigBuilder;
@@ -11,8 +14,15 @@ fn main() {
     .add_plugins(RapierPhysicsPlugin::<NoUserData>::default())
     .add_plugins(RapierDebugRenderPlugin::default())
     .insert_resource(ClearColor(BACKGROUND_COLOR))
-    .add_systems(Startup, (setup_graphics, setup_physics))
+    .add_systems(Startup, (
+      setup_graphics,
+      setup_physics,
+      lifecycle_system::initial_spawn,
+      rendering_system::initialize,
+    ))
+    .add_systems(PostStartup, rendering_system::setup)
     .add_systems(FixedUpdate, update_system)
+    .add_systems(Update, movement_system::keyboard_animation_control)
     .run();
 }
 
@@ -45,23 +55,6 @@ fn setup_physics(mut commands: Commands) {
   commands
     .spawn(Collider::cuboid(100.0, 0.1, 100.0))
     .insert(TransformBundle::from(Transform::from_xyz(0.0, -2.0, 0.0)));
-
-  /* Create the bouncing ball. */
-  commands
-    .spawn(RigidBody::Dynamic)
-    .insert(Collider::ball(0.5))
-    .insert(Restitution::coefficient(0.7))
-    .insert(TransformBundle::from(Transform::from_xyz(0.0, 4.0, 0.0)));
-
-  /* Configure the character controller & collider. */
-  commands
-    .spawn(RigidBody::KinematicPositionBased)
-    .insert(Collider::ball(0.5))
-    .insert(TransformBundle::from(Transform::from_xyz(0.0, 1.0, 0.0)))
-    .insert(KinematicCharacterController {
-      offset: CharacterLength::Relative(0.01),
-      ..default()
-    });
 }
 
 const PLAYER_SPEED: f32 = 5.0;
