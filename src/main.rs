@@ -3,7 +3,7 @@ use bevy_rapier3d::prelude::*;
 use bevy::pbr::CascadeShadowConfigBuilder;
 use core::f32::consts::PI;
 
-const BACKGROUND_COLOR: Color = Color::BLACK;
+const BACKGROUND_COLOR: Color = Color::WHITE;
 
 fn main() {
   App::new()
