@@ -45,6 +45,7 @@ fn update_system(
   time: Res<Time>,
 ) {
   for mut controller in controllers.iter_mut() {
+    let gravity_drop = Vec3::new(0.0, -3.0, 0.0);
     let mut direction = Vec3::new(0.0, 0.0, 0.0);
     if keyboard_input.pressed(KeyCode::ArrowLeft) {
       direction.x -= 1.0;
@@ -59,6 +60,7 @@ fn update_system(
       direction.z += 1.0;
     }
 
-    controller.translation = Some(direction * PLAYER_SPEED * time.delta_seconds());
+    let velocity = direction * PLAYER_SPEED + gravity_drop;
+    controller.translation = Some(velocity * time.delta_seconds());
   }
 }
