@@ -1,5 +1,7 @@
 use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
+use bevy::pbr::CascadeShadowConfigBuilder;
+use core::f32::consts::PI;
 
 const BACKGROUND_COLOR: Color = Color::BLACK;
 
@@ -15,9 +17,26 @@ fn main() {
 }
 
 fn setup_graphics(mut commands: Commands) {
+  // Camera
   commands.spawn(Camera3dBundle {
-    transform: Transform::from_xyz(-3.0, 3.0, 10.0).looking_at(Vec3::ZERO, Vec3::Y),
+    transform: Transform::from_xyz(0.0, 8.0, 0.0).looking_at(Vec3::ZERO, Vec3::Y),
     ..Default::default()
+  });
+
+  // Light
+  commands.spawn(DirectionalLightBundle {
+    transform: Transform::from_rotation(Quat::from_euler(EulerRot::ZYX, 0.0, 1.0, -PI / 4.)),
+    directional_light: DirectionalLight {
+      shadows_enabled: true,
+      ..default()
+    },
+    cascade_shadow_config: CascadeShadowConfigBuilder {
+      first_cascade_far_bound: 200.0,
+      maximum_distance: 400.0,
+      ..default()
+    }
+        .into(),
+    ..default()
   });
 }
 
