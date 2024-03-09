@@ -16,7 +16,7 @@ fn main() {
 
 fn setup_graphics(mut commands: Commands) {
   commands.spawn(Camera3dBundle {
-    transform: Transform::from_xyz(-3.0, 3.0, 10.0).looking_at(Vec3::ZERO, Vec3::Y),
+    transform: Transform::from_xyz(0.0, 20.0, 0.0).looking_at(Vec3::ZERO, -Vec3::Z),
     ..Default::default()
   });
 }
@@ -27,9 +27,22 @@ fn setup_physics(mut commands: Commands) {
     .spawn(Collider::cuboid(100.0, 0.1, 100.0))
     .insert(TransformBundle::from(Transform::from_xyz(0.0, -2.1, 0.0)));
 
+  /* Create some walls for the player to bump into. */
   commands
-    .spawn(Collider::cuboid(10.0, 2.0, 0.1))
+    .spawn(Collider::cuboid(7.0, 2.0, 0.1))
     .insert(TransformBundle::from(Transform::from_xyz(0.0, -1.0, 1.0)));
+  commands
+    .spawn(Collider::cuboid(0.1, 2.0, 1.0))
+    .insert(TransformBundle::from(Transform::from_xyz(-7.0, -1.0, 0.0)));
+  commands
+    .spawn(Collider::cuboid(0.1, 2.0, 2.0))
+    .insert(TransformBundle::from(Transform::from_xyz(7.0, -1.0, -1.0)));
+  commands
+    .spawn(Collider::cuboid(6.0, 2.0, 0.1))
+    .insert(TransformBundle::from(Transform::from_xyz(-1.0, -1.0, -1.0)));
+  commands
+    .spawn(Collider::cuboid(7.0, 2.0, 0.1))
+    .insert(TransformBundle::from(Transform::from_xyz(0.0, -1.0, -3.0)));
 
   /* Configure the character controller & collider. */
   commands
