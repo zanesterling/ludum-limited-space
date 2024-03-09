@@ -11,7 +11,7 @@ fn main() {
     .add_plugins(RapierDebugRenderPlugin::default())
     .insert_resource(ClearColor(BACKGROUND_COLOR))
     .add_systems(Startup, (setup_graphics, setup_physics))
-    .add_systems(FixedUpdate, (update_player, point_to_cursor))
+    .add_systems(FixedUpdate, (update_player, aim_at_cursor))
     .run();
 }
 
@@ -125,25 +125,41 @@ struct GameCamera;
 #[derive(Component)]
 struct GroundPlane;
 
-fn point_to_cursor(
+fn aim_at_cursor(
   q_window: Query<&Window, With<PrimaryWindow>>,
   q_camera: Query<(&Camera, &GlobalTransform), With<GameCamera>>,
   q_plane: Query<&GlobalTransform, With<GroundPlane>>,
   mut q_player_transform: Query<&mut Transform, With<KinematicCharacterController>>,
 ) {
+  let Some(mouse_point) = mouse_to_ground_plane(q_window, q_camera, q_plane) else {
+    return;
+  };
+
+  for mut transform in q_player_transform.iter_mut() {
+    let mut to_mouse = transform.translation - mouse_point;
+    to_mouse.y = 0.0;
+    transform.rotation = Quat::from_rotation_arc(-Vec3::Z, to_mouse.normalize());
+  }
+}
+
+fn mouse_to_ground_plane(
+  q_window: Query<&Window, With<PrimaryWindow>>,
+  q_camera: Query<(&Camera, &GlobalTransform), With<GameCamera>>,
+  q_plane: Query<&GlobalTransform, With<GroundPlane>>,
+) -> Option<Vec3> {
   let window = q_window.single();
   let (camera, camera_transform) = q_camera.single();
   let ground_transform = q_plane.single();
 
   // Get the cursor, but give up if it's outside the window.
   let Some(cursor_position) = window.cursor_position() else {
-    return;
+    return None;
   };
 
   // Get a ray from the camera to the cursor position.
   let Some(ray) = camera.viewport_to_world(camera_transform, cursor_position) else {
     // If it was impossible to compute, do nothing.
-    return;
+    return None;
   };
 
   // Intersect the view ray and the ground plane.
@@ -152,13 +168,7 @@ fn point_to_cursor(
   let Some(distance) = ray.intersect_plane(plane_origin, plane) else {
     // If the ray doesn't intersect the ground (camera is looking away),
     // do nothing.
-    return;
+    return None;
   };
-  let intersection = ray.get_point(distance);
-
-  for mut transform in q_player_transform.iter_mut() {
-    let mut to_mouse = transform.translation - intersection;
-    to_mouse.y = 0.0;
-    transform.rotation = Quat::from_rotation_arc(-Vec3::Z, to_mouse.normalize());
-  }
+  Some(ray.get_point(distance))
 }
