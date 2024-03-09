@@ -51,7 +51,7 @@ fn setup_physics(mut commands: Commands) {
     .insert(Collider::ball(0.5))
     .insert(TransformBundle::from(Transform::from_xyz(0.0, 1.0, 0.0)))
     .insert(KinematicCharacterController {
-      offset: CharacterLength::Relative(0.01),
+      offset: CharacterLength::Relative(0.05),
       ..default()
     });
   commands
@@ -60,7 +60,7 @@ fn setup_physics(mut commands: Commands) {
     .insert(Collider::ball(0.5))
     .insert(TransformBundle::from(Transform::from_xyz(2.0, 1.0, 0.0)))
     .insert(KinematicCharacterController {
-      offset: CharacterLength::Relative(0.01),
+      offset: CharacterLength::Relative(0.05),
       ..default()
     });
 }
