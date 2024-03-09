@@ -10,7 +10,7 @@ fn main() {
     .add_plugins(RapierDebugRenderPlugin::default())
     .insert_resource(ClearColor(BACKGROUND_COLOR))
     .add_systems(Startup, (setup_graphics, setup_physics))
-    .add_systems(FixedUpdate, update_system)
+    .add_systems(FixedUpdate, update_player)
     .run();
 }
 
@@ -66,7 +66,7 @@ fn setup_physics(mut commands: Commands) {
 }
 
 const PLAYER_SPEED: f32 = 5.0;
-fn update_system(
+fn update_player(
   keyboard_input: Res<ButtonInput<KeyCode>>,
   mut controllers: Query<(&mut KinematicCharacterController, &PlayerKeys)>,
   time: Res<Time>,
