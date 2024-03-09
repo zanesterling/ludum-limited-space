@@ -25,7 +25,11 @@ fn setup_physics(mut commands: Commands) {
   /* Create the ground. */
   commands
     .spawn(Collider::cuboid(100.0, 0.1, 100.0))
-    .insert(TransformBundle::from(Transform::from_xyz(0.0, -2.0, 0.0)));
+    .insert(TransformBundle::from(Transform::from_xyz(0.0, -2.1, 0.0)));
+
+  commands
+    .spawn(Collider::cuboid(10.0, 2.0, 0.1))
+    .insert(TransformBundle::from(Transform::from_xyz(0.0, -1.0, 1.0)));
 
   /* Configure the character controller & collider. */
   commands
