@@ -1,4 +1,4 @@
-pub(crate) mod movement_system;
-pub(crate) mod player;
-pub(crate) mod rendering_system;
-pub(crate) mod lifecycle_system;
+pub mod movement_system;
+pub mod player;
+pub mod rendering_system;
+pub mod lifecycle_system;

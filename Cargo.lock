@@ -2327,6 +2327,7 @@ version = "0.0.1"
 dependencies = [
  "bevy",
  "bevy_rapier3d",
+ "log",
 ]
 
 [[package]]

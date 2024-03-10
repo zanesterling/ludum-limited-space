@@ -1,83 +1,51 @@
 mod player;
-
+mod world;
+mod ui;
+use ui::onscreen;
 use player::*;
 use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
-use bevy::pbr::CascadeShadowConfigBuilder;
-use core::f32::consts::PI;
+use world::controllers;
 
-const BACKGROUND_COLOR: Color = Color::WHITE;
+const BACKGROUND_COLOR: Color = Color::GRAY;
 
 fn main() {
-  App::new()
-    .add_plugins(DefaultPlugins)
-    .add_plugins(RapierPhysicsPlugin::<NoUserData>::default())
-    .add_plugins(RapierDebugRenderPlugin::default())
-    .insert_resource(ClearColor(BACKGROUND_COLOR))
-    .add_systems(Startup, (
-      setup_graphics,
-      setup_physics,
-      lifecycle_system::initial_spawn,
-      rendering_system::initialize,
-    ))
-    .add_systems(PostStartup, rendering_system::setup)
-    .add_systems(FixedUpdate, update_system)
-    .add_systems(Update, movement_system::keyboard_animation_control)
-    .run();
-}
+    let mut app = App::new();
 
-fn setup_graphics(mut commands: Commands) {
-  // Camera
-  commands.spawn(Camera3dBundle {
-    transform: Transform::from_xyz(0.0, 8.0, 0.0).looking_at(Vec3::ZERO, Vec3::Y),
-    ..Default::default()
-  });
+    app
+        .init_resource::<controllers::CursorPosition>()
+        .init_resource::<world::lifecycle_system::WindowSettings>()
+        .insert_resource(ClearColor(BACKGROUND_COLOR));
 
-  // Light
-  commands.spawn(DirectionalLightBundle {
-    transform: Transform::from_rotation(Quat::from_euler(EulerRot::ZYX, 0.0, 1.0, -PI / 4.)),
-    directional_light: DirectionalLight {
-      shadows_enabled: true,
-      ..default()
-    },
-    cascade_shadow_config: CascadeShadowConfigBuilder {
-      first_cascade_far_bound: 200.0,
-      maximum_distance: 400.0,
-      ..default()
+    #[cfg(debug_assertions)] // debug/dev builds only
+    {
+        use bevy::diagnostic::LogDiagnosticsPlugin;
+        app
+            .add_plugins(LogDiagnosticsPlugin::default())
+            .add_systems(Startup, onscreen::setup_onscreen)
+            .add_systems(Update, (
+                onscreen::fps_text_update_system,
+                onscreen::onscreen_debug_showhide,
+                onscreen::cursor_global_coordinates_update_system,
+                onscreen::cursor_normalized_coordinates_update_system,
+            ));
     }
-        .into(),
-    ..default()
-  });
-}
+    app
+        .add_plugins(DefaultPlugins)
+        .add_plugins(RapierPhysicsPlugin::<NoUserData>::default())
+        .add_plugins(RapierDebugRenderPlugin::default())
 
-fn setup_physics(mut commands: Commands) {
-  /* Create the ground. */
-  commands
-    .spawn(Collider::cuboid(100.0, 0.1, 100.0))
-    .insert(TransformBundle::from(Transform::from_xyz(0.0, -2.0, 0.0)));
-}
+        .add_systems(Startup, (
+          world::lifecycle_system::setup_graphics,
+          world::lifecycle_system::setup_physics,
+          lifecycle_system::initial_spawn,
+          rendering_system::initialize,
+        ))
+        .add_systems(PostStartup, rendering_system::setup)
+        .add_systems(Update, (movement_system::keyboard_animation_control,
+                              controllers::update_cursor_position,
+                              world::lifecycle_system::update_window_settings,
+        ))
 
-const PLAYER_SPEED: f32 = 5.0;
-fn update_system(
-  keyboard_input: Res<ButtonInput<KeyCode>>,
-  mut controllers: Query<&mut KinematicCharacterController>,
-  time: Res<Time>,
-) {
-  for mut controller in controllers.iter_mut() {
-    let mut direction = Vec3::new(0.0, 0.0, 0.0);
-    if keyboard_input.pressed(KeyCode::ArrowLeft) {
-      direction.x -= 1.0;
-    }
-    if keyboard_input.pressed(KeyCode::ArrowRight) {
-      direction.x += 1.0;
-    }
-    if keyboard_input.pressed(KeyCode::ArrowUp) {
-      direction.z -= 1.0;
-    }
-    if keyboard_input.pressed(KeyCode::ArrowDown) {
-      direction.z += 1.0;
-    }
-
-    controller.translation = Some(direction * PLAYER_SPEED * time.delta_seconds());
-  }
+        .run();
 }

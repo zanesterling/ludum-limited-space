@@ -1,8 +1,7 @@
-// Main Player Struct
-
+/// Main Player Struct
 use bevy::prelude::{Component, Reflect, Vec2, Vec3};
 
-pub const DEFAULT_MODEL: &str = "models/source/balkan romanov.glb";
+pub const DEFAULT_MODEL: &str = "models/source/low_poly_humanoid_robot.glb";
 
 #[derive(Component, Default, Reflect)]
 pub struct Player {
