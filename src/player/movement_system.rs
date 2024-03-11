@@ -36,16 +36,14 @@ pub fn keyboard_animation_control(
             transform.translation.x -= (cursor_position.global.x - transform.translation.x) * animation_player.speed();
             transform.translation.y -= (cursor_position.global.y - transform.translation.y) * animation_player.speed();
         }
-
-        // TODO
-        // if keyboard_input.pressed(KeyCode::KeyA) {
-        //     transform.translation.x -= (cursor_position.global.x - transform.translation.x) * animation_player.speed();
-        //     transform.translation.y += (cursor_position.global.y - transform.translation.y) * animation_player.speed();
-        // }
-        // if keyboard_input.pressed(KeyCode::KeyD) {
-        //     transform.translation.x += (cursor_position.global.x - transform.translation.x) * animation_player.speed();
-        //     transform.translation.y += (cursor_position.global.y - transform.translation.y) * animation_player.speed();
-        // }
+        if keyboard_input.pressed(KeyCode::KeyD) {
+            transform.translation.y -= (cursor_position.global.x - transform.translation.x) * animation_player.speed();
+            transform.translation.x += (cursor_position.global.y - transform.translation.y) * animation_player.speed();
+        }
+        if keyboard_input.pressed(KeyCode::KeyA) {
+            transform.translation.y += (cursor_position.global.x - transform.translation.x) * animation_player.speed();
+            transform.translation.x -= (cursor_position.global.y - transform.translation.y) * animation_player.speed();
+        }
 
 
         let direction = cursor_position.global - transform.translation;
