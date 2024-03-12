@@ -2,7 +2,8 @@
 use bevy::prelude::{Component, Entity, KeyCode, Reflect, Vec2, Vec3};
 use bevy::prelude::KeyCode::*;
 
-pub const DEFAULT_MODEL: &str = "models/chaman_ti-pche_3_animations.glb";
+// pub const DEFAULT_MODEL: &str = "models/chaman_ti-pche_3_animations.glb";
+pub const DEFAULT_MODEL: &str = "models/gun-bot_with_walk_and_idle_animation.glb";
 
 #[derive(Reflect)]
 pub struct KeyboardLayout {

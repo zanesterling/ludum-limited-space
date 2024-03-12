@@ -1,3 +1,4 @@
+use std::time::Duration;
 /// Systems responsible for rendering entities: Rendering Sprites, Meshes, Animating Entities,
 /// UI Rendering, Handling Visibility and Occlusion and Post-processing Effects.
 use bevy::animation::{AnimationClip, AnimationPlayer};
@@ -25,12 +26,12 @@ pub fn setup(
 ) {
     for mut animation_player in players.iter_mut() {
         animation_player.set_speed(1.0);
-        animation_player.pause();
-        animation_player.play(animations.0[0].clone_weak()).repeat();
+        animation_player.play(animations.0[1].clone_weak()).repeat();
     }
 }
 
 pub fn move_models(
+    animations: Res<PlayerAnimations>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut query: Query<(&player::Player, &mut AnimationPlayer)>,
 ) {
@@ -40,10 +41,12 @@ pub fn move_models(
                 let current_speed = animation_player.speed();
                 animation_player.set_speed(-current_speed);
             }
-            animation_player.resume();
+            animation_player.play_with_transition(animations.0[0].clone_weak(), Duration::from_millis(250)).repeat();
+            // animation_player.resume();
         }
         if keyboard_input.just_released(player_state.keyboard_layout.forward) {
-            animation_player.pause();
+            animation_player.play_with_transition(animations.0[1].clone_weak(), Duration::from_millis(250)).repeat();
+            // animation_player.pause();
         }
 
         if keyboard_input.just_pressed(player_state.keyboard_layout.back) {
@@ -51,10 +54,12 @@ pub fn move_models(
                 let current_speed = animation_player.speed();
                 animation_player.set_speed(-current_speed);
             }
-            animation_player.resume();
+            animation_player.play_with_transition(animations.0[0].clone_weak(), Duration::from_millis(250)).repeat();
+            // animation_player.resume();
         }
         if keyboard_input.just_released(player_state.keyboard_layout.back) {
-            animation_player.pause();
+            animation_player.play_with_transition(animations.0[1].clone_weak(), Duration::from_millis(250)).repeat();
+            // animation_player.pause();
         }
     }
 }

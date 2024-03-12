@@ -13,7 +13,8 @@ pub fn keyboard_animation_control(
     for (player_state, mut transform) in &mut query {
 
         let euler = transform.rotation.to_euler(EulerRot::YXZ);
-        let yaw = -euler.0 + PI / 2.0;
+        // let yaw = -euler.0 + PI / 2.0;
+        let yaw = -euler.0 + PI;
         let movement = Vec3::new(yaw.cos(), 0.0, yaw.sin()) * player_state.speed;
 
         if keyboard_input.pressed(player_state.keyboard_layout.forward) {
@@ -23,7 +24,8 @@ pub fn keyboard_animation_control(
             transform.translation -= movement;
         }
 
-        let yaw = -euler.0;
+        // let yaw = -euler.0;
+        let yaw = -euler.0 + PI / 2.0;
         let movement = Vec3::new(yaw.cos(), 0.0, yaw.sin()) * player_state.speed;
         if keyboard_input.pressed(player_state.keyboard_layout.left) {
             transform.translation += movement;

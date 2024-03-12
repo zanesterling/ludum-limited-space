@@ -32,7 +32,8 @@ pub fn initial_spawn(mut commands: Commands,
                     .insert(player::Player{
                     position: Vec3::new(2.0, 2.0, 0.0),
                     view_direction: Vec2::ZERO,
-                    speed: 0.03,
+                    // speed: 0.03,
+                    speed: 0.02,
                     rotational_speed: 0.1,
                     health: 100.0,
                     name: "Player1".parse().unwrap(),
@@ -50,12 +51,14 @@ pub fn initial_spawn(mut commands: Commands,
         }),
     });
 
+    eprintln!("{}", Quat::from_rotation_z(PI / 2.0));
     commands.spawn(HookedSceneBundle {
         scene: SceneBundle {
             scene: asset_server.load(format!("{}{}", player::DEFAULT_MODEL, "#Scene0")),
             transform: Transform {
                 translation: Vec3::new(-4.0, -4.0, 0.0),
-                rotation: Quat::from_rotation_x(PI / 2.0),
+                // rotation: Quat::from_rotation_x(PI / 2.0),
+                rotation: Quat::from_euler(EulerRot::XYZ, PI / 2.0, PI, 0.0),
                 ..Default::default()
             },
             ..Default::default()
@@ -69,7 +72,8 @@ pub fn initial_spawn(mut commands: Commands,
                     .insert(player::Player{
                     position: Vec3::new(2.0, 2.0, 0.0),
                     view_direction: Vec2::ZERO,
-                    speed: 0.03,
+                    // speed: 0.03,
+                    speed: 0.02,
                     rotational_speed: 0.1,
                     health: 100.0,
                     name: "Player2".parse().unwrap(),
