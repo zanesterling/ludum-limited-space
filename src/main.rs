@@ -8,6 +8,7 @@ use bevy_rapier3d::prelude::*;
 use bevy_rapier3d::render::RapierDebugRenderPlugin;
 use bevy_scene_hook::HookPlugin;
 use world::controllers;
+use crate::player::rendering_system::move_models;
 
 const BACKGROUND_COLOR: Color = Color::GRAY;
 
@@ -44,11 +45,11 @@ fn main() {
           lifecycle_system::initial_spawn,
           rendering_system::initialize,
         ))
-
-        .add_systems(PostStartup, rendering_system::setup)
         .add_systems(Update, (movement_system::keyboard_animation_control,
                               controllers::update_cursor_position,
                               world::lifecycle_system::update_window_settings,
+                              rendering_system::setup,
+                              move_models,
         ))
 
         .run();
