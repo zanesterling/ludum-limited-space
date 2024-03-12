@@ -39,7 +39,7 @@ pub fn setup_onscreen(mut commands: Commands) {
                 position_type: PositionType::Absolute,
                 right: Val::Auto,
                 min_width: Val::Percent(40.0),
-                min_height: Val::Percent(15.0),
+                min_height: Val::Percent(20.0),
                 top: Val::Percent(1.),
                 bottom: Val::Auto,
                 left: Val::Percent(1.),
@@ -121,11 +121,16 @@ pub fn setup_onscreen(mut commands: Commands) {
             ..Default::default()
         }.with_style(style.clone()),
     )).id();
+
     let help_text = commands.spawn((
         TextBundle {
             text: Text::from_sections([
                 TextSection {
-                    value: "\n\n\nPress F12 to hide".into(),
+                    value: "\n\n\nMove forward: W or I\n \
+                    Move back: S or K\n \
+                    Move left/right: Q/E or I/P\n \
+                    Turn left/right: A/D or J/L\n \
+                    Press F12 to hide".into(),
                     style: TextStyle {
                         font_size: 16.0,
                         color: Color::WHITE,

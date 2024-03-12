@@ -5,6 +5,7 @@ use ui::onscreen;
 use player::*;
 use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
+use bevy_scene_hook::HookPlugin;
 use world::controllers;
 
 const BACKGROUND_COLOR: Color = Color::GRAY;
@@ -34,6 +35,7 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugins(RapierPhysicsPlugin::<NoUserData>::default())
         .add_plugins(RapierDebugRenderPlugin::default())
+        .add_plugins(HookPlugin)
 
         .add_systems(Startup, (
           world::lifecycle_system::setup_graphics,
@@ -41,6 +43,7 @@ fn main() {
           lifecycle_system::initial_spawn,
           rendering_system::initialize,
         ))
+
         .add_systems(PostStartup, rendering_system::setup)
         .add_systems(Update, (movement_system::keyboard_animation_control,
                               controllers::update_cursor_position,
