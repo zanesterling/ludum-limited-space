@@ -4,6 +4,7 @@ use std::f32::consts::PI;
 use bevy::asset::AssetServer;
 use bevy::prelude::*;
 use bevy::prelude::KeyCode::*;
+use bevy_rapier3d::prelude::{Collider, Restitution};
 use bevy_scene_hook::{HookedSceneBundle, SceneHook};
 use crate::player::player;
 use crate::player::player::KeyboardLayout;
@@ -25,8 +26,11 @@ pub fn initial_spawn(mut commands: Commands,
         hook: SceneHook::new(|entity, cmds| {
             let e = entity.get::<AnimationPlayer>();
             if e.is_some() {
-                cmds.insert(player::Player{
-                    position: Vec3::new(2.0, 2.0, 2.0),
+                cmds
+                    .insert(Collider::capsule_z(1.0, 0.3))
+                    .insert(Restitution::coefficient(0.7))
+                    .insert(player::Player{
+                    position: Vec3::new(2.0, 2.0, 0.0),
                     view_direction: Vec2::ZERO,
                     speed: 0.01,
                     rotational_speed: 0.1,
@@ -59,8 +63,11 @@ pub fn initial_spawn(mut commands: Commands,
         hook: SceneHook::new(|entity, cmds| {
             let e = entity.get::<AnimationPlayer>();
             if e.is_some() {
-                cmds.insert(player::Player{
-                    position: Vec3::new(2.0, 2.0, 2.0),
+                cmds
+                    .insert(Collider::capsule_z(1.0, 0.3))
+                    .insert(Restitution::coefficient(0.7))
+                    .insert(player::Player{
+                    position: Vec3::new(2.0, 2.0, 0.0),
                     view_direction: Vec2::ZERO,
                     speed: 0.01,
                     rotational_speed: 0.1,

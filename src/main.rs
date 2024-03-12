@@ -5,6 +5,7 @@ use ui::onscreen;
 use player::*;
 use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
+use bevy_rapier3d::render::RapierDebugRenderPlugin;
 use bevy_scene_hook::HookPlugin;
 use world::controllers;
 
@@ -22,6 +23,7 @@ fn main() {
     {
         use bevy::diagnostic::LogDiagnosticsPlugin;
         app
+            .add_plugins(RapierDebugRenderPlugin::default())
             .add_plugins(LogDiagnosticsPlugin::default())
             .add_systems(Startup, onscreen::setup_onscreen)
             .add_systems(Update, (
@@ -34,7 +36,6 @@ fn main() {
     app
         .add_plugins(DefaultPlugins)
         .add_plugins(RapierPhysicsPlugin::<NoUserData>::default())
-        .add_plugins(RapierDebugRenderPlugin::default())
         .add_plugins(HookPlugin)
 
         .add_systems(Startup, (
