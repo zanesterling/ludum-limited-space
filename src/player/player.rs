@@ -3,6 +3,7 @@ use bevy::prelude::{Component, Entity, KeyCode, Reflect, Vec2, Vec3};
 use bevy::prelude::KeyCode::*;
 
 // pub const DEFAULT_MODEL: &str = "models/chaman_ti-pche_3_animations.glb";
+// "Gun-Bot with walk and idle Animation" (https://skfb.ly/FX88) by 3DHaupt is licensed under Creative Commons Attribution-NonCommercial (http://creativecommons.org/licenses/by-nc/4.0/).
 pub const DEFAULT_MODEL: &str = "models/gun-bot_with_walk_and_idle_animation.glb";
 
 #[derive(Reflect)]
